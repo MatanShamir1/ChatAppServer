@@ -25,9 +25,14 @@ namespace ChatApp.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Conversation>()
-                .HasOne(a => a.RemoteUser)
-                .WithOne(b => b.Conversation)
-                .HasForeignKey<RemoteUser>(a => a.Username);
+               .HasOne(b => b.RemoteUser)
+               .WithOne(i => i.Conversation)
+               .HasForeignKey<RemoteUser>(b => b.ConversationId);
+
+            modelBuilder.Entity<RemoteUser>()
+               .HasOne(b => b.Conversation)
+               .WithOne(i => i.RemoteUser)
+               .HasForeignKey<Conversation>(b => b.RemoteUserId);
         }
     }
 }

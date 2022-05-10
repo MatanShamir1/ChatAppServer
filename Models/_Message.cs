@@ -1,14 +1,10 @@
 ﻿namespace ChatApp.Models
 {
-    public class Message
+    public class _Message
     {
         public int Id { get; set; }
-
         public string Content { get; set; }
-
-        public string Time { get; set; }
-
-        
-
+        public string Created { get; set; }
+        public bool Sent { get; set; }
     }
 }

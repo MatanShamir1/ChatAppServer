@@ -6,7 +6,8 @@ namespace ChatApp.Models
     {
         public int Id { get; set; }
         public User User { get; set; }
-        //[ForeignKey("RemoteUser")]
+
+        public int RemoteUserId { get; set; }
         public RemoteUser RemoteUser { get; set; }
         public List<Message> Messages { get; set; }
     }
