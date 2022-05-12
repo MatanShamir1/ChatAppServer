@@ -1,13 +1,8 @@
 ﻿#nullable disable
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using ChatApp.Data;
 using ChatApp.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ChatApp.Controllers
 {
@@ -20,13 +15,24 @@ namespace ChatApp.Controllers
             _context = context;
         }
 
-        // GET: Ratings
+        // GET: Ratingss
         public async Task<IActionResult> Index()
         {
             return View(await _context.Ratings.ToListAsync());
         }
-
-        // GET: Ratings/Details/5
+        public async Task<IActionResult> Create2()
+        {
+            return View(await _context.Ratings.ToListAsync());
+        }
+        [HttpPost]
+        public async Task<IActionResult> Search(string query)
+        {
+            var Ratings = from Rating in _context.Ratings
+                         where Rating.Name.Contains(query)
+                         select Rating;
+            return View(await Ratings.ToListAsync());
+        }
+        // GET: Ratingss/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -34,39 +40,41 @@ namespace ChatApp.Controllers
                 return NotFound();
             }
 
-            var rating = await _context.Ratings
+            var Ratings = await _context.Ratings
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (rating == null)
+            if (Ratings == null)
             {
                 return NotFound();
             }
 
-            return View(rating);
+            return View(Ratings);
         }
 
-        // GET: Ratings/Create
+        // GET: Ratingss/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Ratings/Create
+        // POST: Ratingss/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Rate,Time,Comment")] Rating rating)
+        public async Task<IActionResult> Create([Bind("Id,Rate,Text,Name, Time")] Rating Rating)
         {
+            string time = DateTime.Now.ToString("h:mm:ss tt");
+            Rating.Time = time;
             if (ModelState.IsValid)
             {
-                _context.Add(rating);
+                _context.Add(Rating);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(rating);
+            return View(Rating);
         }
 
-        // GET: Ratings/Edit/5
+        // GET: Ratingss/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -74,36 +82,38 @@ namespace ChatApp.Controllers
                 return NotFound();
             }
 
-            var rating = await _context.Ratings.FindAsync(id);
-            if (rating == null)
+            var Ratings = await _context.Ratings.FindAsync(id);
+            if (Ratings == null)
             {
                 return NotFound();
             }
-            return View(rating);
+
+            return View(Ratings);
         }
 
-        // POST: Ratings/Edit/5
+        // POST: Ratingss/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Rate,Time,Comment")] Rating rating)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Rate,Text,Name,Time")] Rating Rating)
         {
-            if (id != rating.Id)
+            if (id != Rating.Id)
             {
                 return NotFound();
             }
-
+            string time = DateTime.Now.ToString("h:mm:ss tt");
+            Rating.Time = time;
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(rating);
+                    _context.Update(Rating);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!RatingExists(rating.Id))
+                    if (!RatingsExists(Rating.Id))
                     {
                         return NotFound();
                     }
@@ -114,10 +124,10 @@ namespace ChatApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(rating);
+            return View(Rating);
         }
 
-        // GET: Ratings/Delete/5
+        // GET: Ratingss/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -125,28 +135,28 @@ namespace ChatApp.Controllers
                 return NotFound();
             }
 
-            var rating = await _context.Ratings
+            var Ratings = await _context.Ratings
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (rating == null)
+            if (Ratings == null)
             {
                 return NotFound();
             }
 
-            return View(rating);
+            return View(Ratings);
         }
 
-        // POST: Ratings/Delete/5
+        // POST: Ratingss/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var rating = await _context.Ratings.FindAsync(id);
-            _context.Ratings.Remove(rating);
+            var Ratings = await _context.Ratings.FindAsync(id);
+            _context.Ratings.Remove(Ratings);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool RatingExists(int id)
+        private bool RatingsExists(int id)
         {
             return _context.Ratings.Any(e => e.Id == id);
         }

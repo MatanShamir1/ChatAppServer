@@ -13,7 +13,7 @@ namespace ChatApp.Controllers
 {
 
     [ApiController]
-    [Route("api/cocccntacts/{action}")]
+    [Route("api/{action}")]
     public class UsersController : Controller
     {
 
@@ -57,14 +57,6 @@ namespace ChatApp.Controllers
             return View(user);
         }
 
-
-
-
-        // GET: Users/Create
-        public IActionResult Login()
-        {
-            return View();
-        }
 
         // POST: Users/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.

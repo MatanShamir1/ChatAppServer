@@ -10,6 +10,7 @@ using ChatApp.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ChatApp.Data;
+using ChatApp.Services;
 
 namespace ChatApp.Controllers
 {
@@ -24,9 +25,11 @@ namespace ChatApp.Controllers
             return date.ToString("o");
         }
         private readonly ChatAppContext _context;
+        private readonly ConversationsService _service;
 
         public ConversationsController(ChatAppContext context)
         {
+            _service = new ConversationsService(context);
             _context = context;
 
             User u = new User()
@@ -60,23 +63,9 @@ namespace ChatApp.Controllers
 
             if (id != null)
             {
-                var q = from conversations in _context.Conversations
-                        where conversations.RemoteUser.Username == id && conversations.User.Username == name
-                        select conversations.RemoteUser;
+                _User remoteUser = _service.GetContactById(id,name);
 
-                RemoteUser remoteUser = q.First();
-
-                Message lastMessage = getLastMessage(remoteUser, name);
-                string content = getContentFromMessage(lastMessage);
-
-                return Json(new _User()
-                {
-                    Id = remoteUser.Username,
-                    Name = remoteUser.Nickname,
-                    Server = remoteUser.Server,
-                    LastDate = lastMessage.Time,
-                    Last = content
-                });
+                return Json(remoteUser);
             }
 
 
@@ -97,13 +86,21 @@ namespace ChatApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                remoteUser.Id = _context.RemoteUsers.Max(x => x.Id) + 1;
-                remoteUser.Conversation = new Conversation();
+                string name = "Matan";
+                //string name = HttpContext.Session.GetString("username");
+                //remoteUser.Id = _context.RemoteUsers.Max(x => x.Id) + 1;
+                var user = from users in _context.Users
+                           where users.Username == name
+                           select users;
+                User current = user.First();
+                Conversation conversation = new Conversation() { User = current, RemoteUser = remoteUser, Messages = new List<Message>(), RemoteUserId = remoteUser.Id};
+                remoteUser.Conversation = conversation;
                 _context.RemoteUsers.Add(remoteUser);
+                _context.Conversations.Add(conversation);
                 await _context.SaveChangesAsync();
                 //return RedirectToAction(nameof(Index));
                 //return View("good");
-                return Json(new EmptyResult());
+                return StatusCode(201);
             }
             return View("not");
         }

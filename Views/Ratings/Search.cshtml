@@ -7,7 +7,7 @@
 <head>
    <style>
 body{
- background: grey;
+background:grey;
 font-family: 'Barlow Semi Condensed', sans-serif;
 }
 .main-section{
@@ -103,9 +103,6 @@ width:48%;
 float:left;
 text-align: center;
 }
-.ch2{
-    text-wieght:bold;
-}
 .user-text{
 float:left;
 }
@@ -131,7 +128,6 @@ text-align:center;
     text-align:center;
     padding:12px;
 }
-
 .links{
     float:right;
 }
@@ -210,9 +206,8 @@ sum = sum / counter;
 
 </div>
 <div style="clear: both;"></div>
-
 <div class="reviews"><h1>Reviews</h1></div>
-<hr>
+
 <div class="comment-part">
 
 <div style="clear: both;"></div>
@@ -223,12 +218,12 @@ sum = sum / counter;
         <div class="user-text">
         <h4>@item.Time</h4>
         <p>@Html.DisplayFor(modelItem => item.Name)</p>
-        <div>Review</div>
-        <span class="ch2">@Html.DisplayFor(modelItem => item.Text)</span>
         </div>
         <div style="clear: both;"></div>
 </div>
     <div class="comment">
+       <span>Review</span> 
+        <span>@Html.DisplayFor(modelItem => item.Text)</span>
           @if(item.Rate > 4.5){
             <span class="fa fa-star checked pad"></span>
             <span class="fa fa-star checked "></span>
@@ -253,11 +248,11 @@ sum = sum / counter;
            else if(item.Rate>1.5) {
             <span class="fa fa-star checked pad "></span>
             <span class="fa fa-star checked "></span>
-
         }
            else if(item.Rate> 0.5) {
                <span class="fa fa-star checked pad"></span>
         } 
+        </div>
    
   
         <span class="links">
@@ -265,7 +260,7 @@ sum = sum / counter;
              <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
              <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
         </span>
-    </div>
+
 <div style="clear: both;"></div>
 <hr>
 }
@@ -275,3 +270,16 @@ sum = sum / counter;
 </div>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
