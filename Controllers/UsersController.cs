@@ -13,7 +13,7 @@ namespace ChatApp.Controllers
 {
 
     [ApiController]
-    [Route("api/{action}")]
+    [Route("api/[controller]/[action]")]
     public class UsersController : Controller
     {
 
@@ -25,16 +25,10 @@ namespace ChatApp.Controllers
 
         }
 
-        // GET: Users/Create
-        public IActionResult Register()
-        {
-            return View();
-        }
-
         // POST: Users/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost, ActionName("Register")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register([Bind("UserName,Password,NickName")] User user)
         {
@@ -61,10 +55,11 @@ namespace ChatApp.Controllers
         // POST: Users/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost, ActionName("login")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login([Bind("UserName,Password")] User user)
+        [HttpPost]
+        public IActionResult Login()
         {
+            User user = new User(); 
+            
             if (ModelState.IsValid)
             {
 
@@ -83,7 +78,9 @@ namespace ChatApp.Controllers
 
 
             }
-            return View(user);
+
+            return Ok(200);
+            
         }
 
     }
