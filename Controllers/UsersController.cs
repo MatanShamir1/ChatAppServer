@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ChatApp.Models;
 using ChatApp.Data;
+using System.Text.RegularExpressions;
 
 namespace ChatApp.Controllers
 {
@@ -29,23 +30,43 @@ namespace ChatApp.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register([Bind("UserName,Password,NickName")] User user)
+        public IActionResult Register([FromBody] User user)
         {
             if (ModelState.IsValid)
             {
-
                 var isTakenUserName = from userName in _context.Users.Where(m => m.Username == user.Username) select userName;
                 if (isTakenUserName.Any())
                 {
-                    return View("Error");
+                    return Json("already register");
                 }
                 else
                 {
-                    HttpContext.Session.SetString("username", isTakenUserName.First().Username);
-                    _context.Add(user);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
+                    Regex password = new Regex(@"[0-9]+");
+                    
+                    Regex name = new Regex(@"^[a-zA-Z]+$");
+                   
+                    if (name.IsMatch(user.Username))
+                    {
+                        if (password.IsMatch(user.Password))
+                        {
+                            if (name.IsMatch(user.Nickname))
+                            {
+                                //HttpContext.Session.SetString("username", isTakenUserName.First().Username);
+                                _context.Add(user);
+                                _context.SaveChangesAsync();
+                                return Json("yes");
+                            }
+                            else { return Json("no"); }
+                        }
+                        else
+                        {
+                            return  Json("no");
+                        }
+                    }
+                    else
+                    {
+                        return Json("no");
+                    }
                 }
             }
             return View(user);
@@ -56,29 +77,27 @@ namespace ChatApp.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        public IActionResult Login()
+        //public IActionResult Login([FromBody]User user)
+        public IActionResult Login([FromBody]User user)
         {
-            User user = new User(); 
-            
             if (ModelState.IsValid)
             {
-
+                
                 var isRegistered = _context.Users.Where(m => m.Username == user.Username && m.Password == user.Password);
                 if (isRegistered.Any())
                 {
                     // we save info and when the user refreshes we know its him
                     HttpContext.Session.SetString("username", isRegistered.First().Username);
                     // rediret with react
-                    return View("yes");
+                    return Json("yes");
                 }
                 else
                 {
-                    return View("no");
+                    return Json("no");
                 }
 
 
             }
-
             return Ok(200);
             
         }

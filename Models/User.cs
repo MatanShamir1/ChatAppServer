@@ -10,9 +10,9 @@ namespace ChatApp.Models
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        public string Nickname { get; set; }
+        public string? Nickname { get; set; }
 
-        public List<Conversation> Conversations { get; set; }
+        public List<Conversation>? Conversations { get; set; }
 
     }
 }
