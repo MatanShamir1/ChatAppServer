@@ -9,6 +9,8 @@ builder.Services.AddDbContext<ChatAppContext>(options =>
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddDistributedMemoryCache();
+
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -20,7 +22,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("cors_policy",
     builder =>
     {
-        builder.WithOrigins("http://localhost:51042/",
+        builder.WithOrigins("http://localhost:3000/",
                             "https://localhost:7243", "http://localhost:7243");
     });
 });
@@ -46,6 +48,8 @@ app.UseRouting();
 app.UseSession();
 
 app.UseAuthorization();
+
+app.UseAuthentication();
 
 app.MapControllerRoute(
     name: "default",

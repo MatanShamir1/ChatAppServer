@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ChatApp.Models;
@@ -34,12 +35,12 @@ namespace ChatApp.Controllers
 
             User u = new User()
             {
-                Username = "Matan",
+                Username = "12345",
                 Nickname = "Tani",
                 Conversations = new List<Conversation>(),
                 Password = "aaa"
             };
-            Message msg = new Message() { Content = "Matan:Hello", Time = getTime() };
+            Message msg = new Message() { Content = "12345:Hello", Time = getTime() };
 
             Conversation conv = new Conversation() { RemoteUser = null, Messages = new List<Message>() { msg }, RemoteUserId = 1, User = u };
             RemoteUser ru = new RemoteUser() { Username = "Coral", Nickname = "Corali", Conversation = conv, Server = "remote", ConversationId = 1 };
@@ -51,15 +52,15 @@ namespace ChatApp.Controllers
             _context.Add(conv);
 
 
-           //_context.SaveChanges();
+           ///_context.SaveChanges();
         }
 
         // GET: /contacts + /contacts/:id
         [HttpGet("contacts/{id?}")]
         public async Task<IActionResult> GettAllContacts(string? id)
         {
-            string name = "Matan";
-            //string name = HttpContext.Session.GetString("username");
+            //string name = "12345";
+            string name = HttpContext.Session.GetString("username");
 
             if (id != null)
             {
@@ -75,7 +76,7 @@ namespace ChatApp.Controllers
                            where conversations.User.Username == name
                            select conversations.RemoteUser.Nickname;
 
-            return Json(contacts);
+            return Json(contacts.First());
             //return View(await _context.Conversations.ToListAsync());
         }
 

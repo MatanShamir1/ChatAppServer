@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ChatApp.Models;
@@ -34,40 +35,18 @@ namespace ChatApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                var isTakenUserName = from userName in _context.Users.Where(m => m.Username == user.Username) select userName;
+                var isTakenUserName = from username in _context.Users.Where(m => m.Username == user.Username) select username;
                 if (isTakenUserName.Any())
                 {
-                    return Json("already register");
+                    return Json("already registered");
                 }
                 else
-                {
-                    Regex password = new Regex(@"[0-9]+");
-                    
-                    Regex name = new Regex(@"^[a-zA-Z]+$");
-                   
-                    if (name.IsMatch(user.Username))
-                    {
-                        if (password.IsMatch(user.Password))
-                        {
-                            if (name.IsMatch(user.Nickname))
-                            {
-                                //HttpContext.Session.SetString("username", isTakenUserName.First().Username);
-                                _context.Add(user);
-                                _context.SaveChangesAsync();
-                                return Json("yes");
-                            }
-                            else { return Json("no"); }
-                        }
-                        else
-                        {
-                            return  Json("no");
-                        }
-                    }
-                    else
-                    {
-                        return Json("no");
-                    }
-                }
+                { 
+                    _context.Add(user);
+                    _context.SaveChangesAsync();
+                    return Json("yes");
+                            
+                 }          
             }
             return View(user);
         }
@@ -82,12 +61,17 @@ namespace ChatApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                
                 var isRegistered = _context.Users.Where(m => m.Username == user.Username && m.Password == user.Password);
+                if(!isRegistered.Any())
+                {
+                    return Json("no");
+                }
+                string isReg = isRegistered.First().Username;
                 if (isRegistered.Any())
                 {
                     // we save info and when the user refreshes we know its him
                     HttpContext.Session.SetString("username", isRegistered.First().Username);
+                
                     // rediret with react
                     return Json("yes");
                 }
@@ -95,12 +79,8 @@ namespace ChatApp.Controllers
                 {
                     return Json("no");
                 }
-
-
             }
-            return Ok(200);
-            
+            return Json("no");
         }
-
     }
 }
