@@ -52,15 +52,15 @@ namespace ChatApp.Controllers
             _context.Add(conv);
 
 
-           ///_context.SaveChanges();
+            //_context.SaveChanges();
         }
 
         // GET: /contacts + /contacts/:id
         [HttpGet("contacts/{id?}")]
         public async Task<IActionResult> GettAllContacts(string? id)
         {
-            //string name = "12345";
-            string name = HttpContext.Session.GetString("username");
+            string name = "12345";
+            //string name = HttpContext.Session.GetString("username");
 
             if (id != null)
             {
@@ -69,8 +69,6 @@ namespace ChatApp.Controllers
                 return Json(remoteUser);
             }
 
-
-            //string name = HttpContext.Session.GetString("username");
 
             var contacts = from conversations in _context.Conversations
                            where conversations.User.Username == name

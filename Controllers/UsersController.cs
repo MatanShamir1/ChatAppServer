@@ -48,7 +48,7 @@ namespace ChatApp.Controllers
                             
                  }          
             }
-            return View(user);
+            return Json("no");
         }
 
 
@@ -62,12 +62,7 @@ namespace ChatApp.Controllers
             if (ModelState.IsValid)
             {
                 var isRegistered = _context.Users.Where(m => m.Username == user.Username && m.Password == user.Password);
-                if(!isRegistered.Any())
-                {
-                    return Json("no");
-                }
-                string isReg = isRegistered.First().Username;
-                if (isRegistered.Any())
+                if(isRegistered.Any())
                 {
                     // we save info and when the user refreshes we know its him
                     HttpContext.Session.SetString("username", isRegistered.First().Username);
