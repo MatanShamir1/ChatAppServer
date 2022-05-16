@@ -47,7 +47,7 @@ namespace ChatApp.Controllers
             }
             //var messages = await _context.Messages.ToListAsync();
             var qu = from conversations in _context.Conversations
-                     where conversations.User.Username == "12345" && conversations.RemoteUser.Username == "12345"
+                     where conversations.User.Username == "12345" && conversations.RemoteUser.Username == id
                      select conversations.Messages.ToList();
             List<Message> messages = qu.First();
 
