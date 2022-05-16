@@ -37,19 +37,33 @@ namespace ChatApp.Controllers
                 var q = from message in _context.Messages
                         where message.Id == id2
                         select message;
+
                 Message mess = q.First();
 
                 bool sent;
 
-                if (getSenderFromMessage(mess) == id) { sent = true; } else { sent = false; }
+                if (getSenderFromMessage(mess) == id) { sent = false; } else { sent = true; }
 
                 return Json(new _Message() { Content = getContentFromMessage(mess), Created = getTime(), Id = mess.Id, Sent = sent });
             }
             //var messages = await _context.Messages.ToListAsync();
-            var qu = from conversations in _context.Conversations
-                     where conversations.User.Username == "12345" && conversations.RemoteUser.Username == id
-                     select conversations.Messages.ToList();
-            List<Message> messages = qu.First();
+            //var qu = from conversations in _context.Conversations
+              //       where conversations.User.Username == "12345" && conversations.RemoteUser.Username == id
+                //     select conversations.Messages.ToList();
+
+            var query = _context.Conversations.Include(m => m.Messages).Where(c => c.User.Username == name && c.RemoteUser.Username == id).ToList();
+
+            if (!query.Any())
+            {
+                return Json("empty");
+            }
+
+            List<Message> messages = query.First().Messages;
+
+            if (!messages.Any())
+            {
+                return Json("empty");
+            }
 
             var messagesList = new List<_Message>();
 
@@ -61,7 +75,7 @@ namespace ChatApp.Controllers
                 int Id = message.Id;
 
                 bool sent;
-                // ????????????????????????????????
+
                 if (sender == name) { sent = true; } else { sent = false; }
 
                 messagesList.Add(new _Message() { Content = content, Id = Id, Sent = sent, Created = time });
@@ -71,20 +85,28 @@ namespace ChatApp.Controllers
         }
 
         // POST: Messages
-        [HttpPost, ActionName("messages")]
-        public async Task<IActionResult> SetMessageContent(string id, [Bind("content")] string content)
+        [HttpPost]
+        public async Task<IActionResult> SetMessageContent(string id,[Bind("content")] Message message)
         {
-            string username = HttpContext.Session.GetString("username");
+            string username = "12345";
+            //string username = HttpContext.Session.GetString("username");
 
-            var conversation = (Conversation)from conv in _context.Conversations
-                                             where conv.User.Username == username && conv.RemoteUser.Username == id
-                                             select conv;
+            var conversation = from conv in _context.Conversations.Include(c => c.Messages)
+                               where conv.User.Username == username && conv.RemoteUser.Username == id
+                               select conv;
 
-            string newContent = username + ":" + content;
+            Conversation conver = conversation.FirstOrDefault();
 
-            conversation.Messages.Add(new Message() { Content = newContent, Time = getTime() });
+            string newContent = username + ":" + message.Content;
 
-            // ??????????????????????????????????????????
+            message.Content = newContent;
+
+            message.Time = getTime();
+
+            conver.Messages.Add(message);
+
+            _context.SaveChanges();
+
             return StatusCode(201);    // 201
         }
 

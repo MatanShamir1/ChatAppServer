@@ -6,9 +6,7 @@
 
         public string Content { get; set; }
 
-        public string Time { get; set; }
-
-        
+        public string? Time { get; set; }
 
     }
 }

@@ -63,7 +63,6 @@ namespace ChatApp.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Time")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
