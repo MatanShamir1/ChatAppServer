@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChatApp.Migrations
 {
     [DbContext(typeof(ChatAppContext))]
-    [Migration("20220513180439_init")]
-    partial class init
+    [Migration("20220515085810_change")]
+    partial class change
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -118,7 +118,6 @@ namespace ChatApp.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Server")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Username")
@@ -180,8 +179,7 @@ namespace ChatApp.Migrations
 
             modelBuilder.Entity("ChatApp.Models.RemoteUser", b =>
                 {
-                    b.Navigation("Conversation")
-                        .IsRequired();
+                    b.Navigation("Conversation");
                 });
 
             modelBuilder.Entity("ChatApp.Models.User", b =>

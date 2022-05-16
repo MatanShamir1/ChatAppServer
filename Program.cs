@@ -14,21 +14,23 @@ builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
     options.Cookie.IsEssential = true;
+    options.Cookie.HttpOnly = false;
+    options.Cookie.SameSite = SameSiteMode.None;
     options.IdleTimeout = TimeSpan.FromMinutes(30);
 });
 
-builder.Services.AddCors(options => 
+builder.Services.AddCors(options =>
 {
     // options.AddDefaultPolicy(policy => policy.AllowAnyOrigin());
     options.AddPolicy("cors_policy",
     builder =>
     {
-        builder.WithOrigins("http://localhost:3000/",
-                            "https://localhost:7243", "http://localhost:7243");
+        builder.WithOrigins("http://localhost:53601").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
+        builder.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
     });
 });
 var app = builder.Build();
-app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -41,11 +43,11 @@ if (!app.Environment.IsDevelopment())
 
 //app.UseCors("cors_policy");
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseCors("cors_policy");
 app.UseSession();
 
 app.UseAuthorization();

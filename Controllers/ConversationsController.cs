@@ -70,18 +70,26 @@ namespace ChatApp.Controllers
             }
 
 
-            var contacts = from conversations in _context.Conversations
+            /*var contacts = from conversations in _context.Conversations
                            where conversations.User.Username == name
-                           select conversations.RemoteUser.Nickname;
+                           select conversations.RemoteUserToList;*/
+            var contacts = _context.Conversations.Include(m => m.RemoteUser).Where(c => c.User.Username == name).ToList();
 
-            return Json(contacts.First());
+            List<_User> users = new List<_User>();
+
+            foreach (var contact in contacts)
+            {
+                users.Add(_service.GetContactById(contact.RemoteUser.Username, name));
+            }
+
+            return Json(users);
             //return View(await _context.Conversations.ToListAsync());
         }
 
 
 
-        [HttpPost]
-        public async Task<IActionResult> Index([Bind("UserName, NickName, Server")] RemoteUser remoteUser)
+        [HttpPost ("contacts/{id?}")]
+        public IActionResult Index([FromBody] RemoteUser remoteUser)
         {
             if (ModelState.IsValid)
             {
@@ -89,14 +97,14 @@ namespace ChatApp.Controllers
                 //string name = HttpContext.Session.GetString("username");
                 //remoteUser.Id = _context.RemoteUsers.Max(x => x.Id) + 1;
                 var user = from users in _context.Users
-                           where users.Username == name
+                           where users.Username == "12345"
                            select users;
                 User current = user.First();
                 Conversation conversation = new Conversation() { User = current, RemoteUser = remoteUser, Messages = new List<Message>(), RemoteUserId = remoteUser.Id};
                 remoteUser.Conversation = conversation;
                 _context.RemoteUsers.Add(remoteUser);
                 _context.Conversations.Add(conversation);
-                await _context.SaveChangesAsync();
+                 _context.SaveChangesAsync();
                 //return RedirectToAction(nameof(Index));
                 //return View("good");
                 return StatusCode(201);

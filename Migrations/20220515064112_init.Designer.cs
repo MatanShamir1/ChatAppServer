@@ -4,6 +4,7 @@ using ChatApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChatApp.Migrations
 {
     [DbContext(typeof(ChatAppContext))]
-    partial class ChatAppContextModelSnapshot : ModelSnapshot
+    [Migration("20220515064112_init")]
+    partial class init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -116,6 +118,7 @@ namespace ChatApp.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Server")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Username")
@@ -177,7 +180,8 @@ namespace ChatApp.Migrations
 
             modelBuilder.Entity("ChatApp.Models.RemoteUser", b =>
                 {
-                    b.Navigation("Conversation");
+                    b.Navigation("Conversation")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ChatApp.Models.User", b =>

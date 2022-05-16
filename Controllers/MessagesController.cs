@@ -29,7 +29,7 @@ namespace ChatApp.Controllers
         [HttpGet("{id2?}")]
         public async Task<IActionResult> GetAllMessages(string id, int id2)
         {
-            string name = "Matan";
+            string name = "12345";
             //string name = HttpContext.Session.GetString("username");
 
             if (id2 != 0)
@@ -47,7 +47,7 @@ namespace ChatApp.Controllers
             }
             //var messages = await _context.Messages.ToListAsync();
             var qu = from conversations in _context.Conversations
-                     where conversations.User.Username == name && conversations.RemoteUser.Username == id
+                     where conversations.User.Username == "12345" && conversations.RemoteUser.Username == "12345"
                      select conversations.Messages.ToList();
             List<Message> messages = qu.First();
 
