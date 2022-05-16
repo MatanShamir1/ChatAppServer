@@ -38,17 +38,17 @@ namespace ChatApp.Controllers
                 var isTakenUserName = from username in _context.Users.Where(m => m.Username == user.Username) select username;
                 if (isTakenUserName.Any())
                 {
-                    return Json("already registered");
+                    return BadRequest();
                 }
                 else
                 { 
                     _context.Add(user);
                     _context.SaveChangesAsync();
-                    return Json("yes");
+                    return StatusCode(201);
                             
                  }          
             }
-            return Json("no");
+            return BadRequest();
         }
 
 
@@ -68,14 +68,14 @@ namespace ChatApp.Controllers
                     HttpContext.Session.SetString("username", isRegistered.First().Username);
                 
                     // rediret with react
-                    return Json("yes");
+                    return StatusCode(201);
                 }
                 else
                 {
-                    return Json("no");
+                    return BadRequest();
                 }
             }
-            return Json("no");
+            return BadRequest();
         }
     }
 }
