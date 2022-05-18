@@ -30,7 +30,7 @@ namespace ChatApp.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Nickname = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Nickname = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ConversationId = table.Column<int>(type: "int", nullable: false),
                     Server = table.Column<string>(type: "nvarchar(max)", nullable: true)

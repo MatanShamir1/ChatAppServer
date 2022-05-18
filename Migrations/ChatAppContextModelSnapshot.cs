@@ -111,7 +111,6 @@ namespace ChatApp.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Nickname")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Server")

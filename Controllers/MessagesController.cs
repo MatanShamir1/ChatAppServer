@@ -103,6 +103,10 @@ namespace ChatApp.Controllers
 
             message.Time = getTime();
 
+            //check if number of messaged is zero, and then send an invitation
+            //and also if its another server and then send transfer.
+
+            //no need to add to messages database; entity frmework adds it alone because of their relation.
             conver.Messages.Add(message);
 
             _context.SaveChanges();

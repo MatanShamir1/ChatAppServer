@@ -33,23 +33,23 @@ namespace ChatApp.Controllers
             _service = new ConversationsService(context);
             _context = context;
 
-            User u = new User()
-            {
-                Username = "12345",
-                Nickname = "Tani",
-                Conversations = new List<Conversation>(),
-                Password = "aaa"
-            };
-            Message msg = new Message() { Content = "12345:Hello", Time = getTime() };
+            //User u = new User()
+            //{
+            //    Username = "12345",
+            //    Nickname = "Tani",
+            //    Conversations = new List<Conversation>(),
+            //    Password = "aaa"
+            //};
+            //Message msg = new Message() { Content = "12345:Hello", Time = getTime() };
 
-            Conversation conv = new Conversation() { RemoteUser = null, Messages = new List<Message>() { msg }, RemoteUserId = 1, User = u };
-            RemoteUser ru = new RemoteUser() { Username = "Coral", Nickname = "Corali", Conversation = conv, Server = "remote", ConversationId = 1 };
-            u.Conversations.Add(conv);
-            conv.RemoteUser = ru;
-            _context.Add(msg);
-            _context.Add(u);
-            _context.Add(ru);
-            _context.Add(conv);
+            //Conversation conv = new Conversation() { RemoteUser = null, Messages = new List<Message>() { msg }, RemoteUserId = 1, User = u };
+            //RemoteUser ru = new RemoteUser() { Username = "Coral", Nickname = "Corali", Conversation = conv, Server = "remote", ConversationId = 1 };
+            //u.Conversations.Add(conv);
+            //conv.RemoteUser = ru;
+            //_context.Add(msg);
+            //_context.Add(u);
+            //_context.Add(ru);
+            //_context.Add(conv);
 
 
             //_context.SaveChanges();
@@ -69,10 +69,6 @@ namespace ChatApp.Controllers
                 return Json(remoteUser);
             }
 
-
-            /*var contacts = from conversations in _context.Conversations
-                           where conversations.User.Username == name
-                           select conversations.RemoteUserToList;*/
             var contacts = _context.Conversations.Include(m => m.RemoteUser).Where(c => c.User.Username == name).ToList();
 
             List<_User> users = new List<_User>();
@@ -83,33 +79,74 @@ namespace ChatApp.Controllers
             }
 
             return Json(users);
-            //return View(await _context.Conversations.ToListAsync());
+        }
+        [HttpPost ("invitations")]
+        public IActionResult Invitation([FromBody] _Invitation invitation)
+        {
+            if (ModelState.IsValid)
+            {
+                var q = from users in _context.Users
+                           where users.Username == invitation.To
+                           select users;
+                if (!q.Any())
+                {
+                    //send back a bad request, user doesn't exist!
+                    return BadRequest();
+                }
+                //in this case, user exists, add "from" to "to"'s contacts list.
+
+                //now, check if "from" somehow already exists. this is an edge case, but needed.
+                var alreadyExists = from conver in _context.Conversations
+                        where conver.User.Username == invitation.To && conver.RemoteUser.Username == invitation.From
+                        select conver;
+
+                if (alreadyExists.Any())
+                {
+                    return StatusCode(201);
+                }
+
+                User to = q.First();
+                Conversation conversation = new Conversation() { User = to, Messages = new List<Message>() };
+                RemoteUser From = new RemoteUser()
+                {
+                    //we dont have the other user's nickname
+                    Conversation = conversation,
+                    Username = invitation.From,
+                    Server = invitation.Server,
+                    ConversationId = conversation.Id
+                };
+                conversation.RemoteUser = From;
+                conversation.RemoteUserId = From.Id;
+                _context.RemoteUsers.Add(From);
+                _context.Conversations.Add(conversation);
+                _context.SaveChangesAsync();
+                return StatusCode(201);
+            }
+            return BadRequest();
         }
 
-
-
-        [HttpPost ("contacts/{id?}")]
-        public IActionResult Index([FromBody] RemoteUser remoteUser)
+        [HttpPost ("contacts")]
+        public IActionResult CreateContact([FromBody] _User initialRemoteUser)
         {
             if (ModelState.IsValid)
             {
                 //string name = "Matan";
                 string name = HttpContext.Session.GetString("username");
-                //remoteUser.Id = _context.RemoteUsers.Max(x => x.Id) + 1;
                 var user = from users in _context.Users
-                           where users.Username == "12345"
+                           where users.Username == name
                            select users;
                 User current = user.First();
-                Conversation conversation = new Conversation() { User = current, RemoteUser = remoteUser, Messages = new List<Message>(), RemoteUserId = remoteUser.Id};
-                remoteUser.Conversation = conversation;
+                Conversation conversation = new Conversation() { User = current, Messages = new List<Message>()};
+                RemoteUser remoteUser = new RemoteUser() {Conversation = conversation, Nickname = initialRemoteUser.Name,
+                    Username = initialRemoteUser.Id, Server = initialRemoteUser.Server, ConversationId = conversation.Id};
+                conversation.RemoteUser = remoteUser;
+                conversation.RemoteUserId = remoteUser.Id;
                 _context.RemoteUsers.Add(remoteUser);
                 _context.Conversations.Add(conversation);
                  _context.SaveChangesAsync();
-                //return RedirectToAction(nameof(Index));
-                //return View("good");
                 return StatusCode(201);
             }
-            return View("not");
+            return BadRequest();
         }
 
 

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChatApp.Migrations
 {
     [DbContext(typeof(ChatAppContext))]
-    [Migration("20220516193442_init")]
+    [Migration("20220518114950_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -113,7 +113,6 @@ namespace ChatApp.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Nickname")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Server")
