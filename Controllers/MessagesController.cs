@@ -29,8 +29,8 @@ namespace ChatApp.Controllers
         [HttpGet("{id2?}")]
         public async Task<IActionResult> GetAllMessages(string id, int id2)
         {
-            string name = "12345";
-            //string name = HttpContext.Session.GetString("username");
+            //string name = "12345";
+            string name = HttpContext.Session.GetString("username");
 
             if (id2 != 0)
             {
@@ -88,8 +88,8 @@ namespace ChatApp.Controllers
         [HttpPost]
         public async Task<IActionResult> SetMessageContent(string id,[Bind("content")] Message message)
         {
-            string username = "12345";
-            //string username = HttpContext.Session.GetString("username");
+            //string username = "12345";
+            string username = HttpContext.Session.GetString("username");
 
             var conversation = from conv in _context.Conversations.Include(c => c.Messages)
                                where conv.User.Username == username && conv.RemoteUser.Username == id

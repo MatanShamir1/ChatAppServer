@@ -59,8 +59,8 @@ namespace ChatApp.Controllers
         [HttpGet("contacts/{id?}")]
         public async Task<IActionResult> GettAllContacts(string? id)
         {
-            string name = "12345";
-            //string name = HttpContext.Session.GetString("username");
+            //string name = "12345";
+            string name = HttpContext.Session.GetString("username");
 
             if (id != null)
             {
@@ -93,8 +93,8 @@ namespace ChatApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                string name = "Matan";
-                //string name = HttpContext.Session.GetString("username");
+                //string name = "Matan";
+                string name = HttpContext.Session.GetString("username");
                 //remoteUser.Id = _context.RemoteUsers.Max(x => x.Id) + 1;
                 var user = from users in _context.Users
                            where users.Username == "12345"

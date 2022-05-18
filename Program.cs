@@ -22,10 +22,11 @@ builder.Services.AddSession(options =>
 builder.Services.AddCors(options =>
 {
     // options.AddDefaultPolicy(policy => policy.AllowAnyOrigin());
+
     options.AddPolicy("cors_policy",
     builder =>
     {
-        builder.WithOrigins("http://localhost:58558").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
+        builder.WithOrigins("http://localhost:3001").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
         builder.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
     });
 });
@@ -42,7 +43,11 @@ if (!app.Environment.IsDevelopment())
 //app.UseCors("Allow All");
 
 //app.UseCors("cors_policy");
-
+app.UseCookiePolicy(
+        new CookiePolicyOptions
+        {
+            Secure = CookieSecurePolicy.Always
+        });
 //app.UseHttpsRedirection();
 app.UseStaticFiles();
 
