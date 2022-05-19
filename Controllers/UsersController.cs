@@ -1,15 +1,9 @@
 ﻿#nullable disable
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using ChatApp.Models;
 using ChatApp.Data;
-using System.Text.RegularExpressions;
+using ChatApp.Services;
 
 namespace ChatApp.Controllers
 {
@@ -19,11 +13,11 @@ namespace ChatApp.Controllers
     public class UsersController : Controller
     {
 
-        private readonly ChatAppContext _context;
+        private readonly UsersService _service;
 
         public UsersController(ChatAppContext context)
         {
-            _context = context;
+            _service = new UsersService(context);
 
         }
 
@@ -35,18 +29,15 @@ namespace ChatApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                var isTakenUserName = from username in _context.Users.Where(m => m.Username == user.Username) select username;
-                if (isTakenUserName.Any())
+                string status = await _service.RegisterNewUser(user);
+                if(status == "201")
                 {
-                    return BadRequest();
+                    return StatusCode(201);
                 }
                 else
-                { 
-                    _context.Add(user);
-                    await _context.SaveChangesAsync();
-                    return StatusCode(201);
-                            
-                 }          
+                {
+                    return BadRequest();
+                }  
             }
             return BadRequest();
         }
@@ -57,16 +48,16 @@ namespace ChatApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         //public IActionResult Login([FromBody]User user)
-        public IActionResult Login([FromBody]User user)
+        public async Task<IActionResult> Login([FromBody]User user)
         {
             if (ModelState.IsValid)
             {
-                var isRegistered = _context.Users.Where(m => m.Username == user.Username && m.Password == user.Password);
-                if(isRegistered.Any())
+                User isRegistered = await _service.UserLogin(user);
+                if (isRegistered != null)
                 {
                     // we save info and when the user refreshes we know its him
-                    HttpContext.Session.SetString("username", isRegistered.First().Username);
-                
+                    HttpContext.Session.SetString("username", isRegistered.Username);
+
                     // rediret with react
                     return StatusCode(201);
                 }
