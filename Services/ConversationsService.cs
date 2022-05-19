@@ -20,13 +20,20 @@ namespace ChatApp.Services
             RemoteUser remoteUser = q.FirstOrDefault();
 
             Message lastMessage = getLastMessage(remoteUser, local_name);
-            string content = getContentFromMessage(lastMessage);
+            string content = "";
+            string lastDate = "";
+            if (lastMessage != null)
+            {
+                content = getContentFromMessage(lastMessage);
+                lastDate = lastMessage.Time;
+            }
+           
             return new _User()
             {
                 Id = remoteUser.Username,
                 Name = remoteUser.Nickname,
                 Server = remoteUser.Server,
-                LastDate = lastMessage.Time,
+                LastDate = lastDate,
                 Last = content
             };
         }

@@ -119,20 +119,20 @@ namespace ChatApp.Controllers
                 conversation.RemoteUserId = From.Id;
                 _context.RemoteUsers.Add(From);
                 _context.Conversations.Add(conversation);
-                _context.SaveChangesAsync();
+                _context.SaveChanges();
                 return StatusCode(201);
             }
             return BadRequest();
         }
 
-        [HttpPost ("contacts")]
+        [HttpPost ("contacts/{id?}")]
         public IActionResult CreateContact([FromBody] _User initialRemoteUser)
         {
             if (ModelState.IsValid)
             {
                 //string name = "Matan";
                 string name = HttpContext.Session.GetString("username");
-                var user = from users in _context.Users
+                var user = from users in _context.Users.Include(m=>m.Conversations)
                            where users.Username == name
                            select users;
                 User current = user.First();
@@ -143,7 +143,7 @@ namespace ChatApp.Controllers
                 conversation.RemoteUserId = remoteUser.Id;
                 _context.RemoteUsers.Add(remoteUser);
                 _context.Conversations.Add(conversation);
-                 _context.SaveChangesAsync();
+                _context.SaveChanges();
                 return StatusCode(201);
             }
             return BadRequest();
