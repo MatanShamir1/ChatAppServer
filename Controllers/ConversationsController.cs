@@ -130,7 +130,6 @@ namespace ChatApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                //string name = "Matan";
                 string name = HttpContext.Session.GetString("username");
                 var user = from users in _context.Users.Include(m=>m.Conversations)
                            where users.Username == name
@@ -163,9 +162,12 @@ namespace ChatApp.Controllers
                 return BadRequest();
             }
 
-            var q =  from remote in _context.RemoteUsers
-                     where remote.Username == id && remote.Server == ru.Server && remote.Nickname == ru.Name
-                     select remote;
+            string name = HttpContext.Session.GetString("username");
+
+            var q = from conversations in _context.Conversations.Include(c => c.RemoteUser)
+                             where conversations.RemoteUser.Username == id && conversations.User.Username == name
+                             select conversations.RemoteUser;
+            
             if (!q.Any())
             {
                 return BadRequest();
@@ -179,39 +181,27 @@ namespace ChatApp.Controllers
 
 
         // DELETE: /contacts/id
-        [HttpDelete, ActionName("contacts")]
-        public async Task<IActionResult> Delete(string contact)
+        [HttpDelete("contacts/{id?}")]
+        public async Task<IActionResult> Delete(string id)
         {
-            if (contact == null)
+            if (id == null)
             {
-                return Json(new EmptyResult());
+                return BadRequest();
             }
 
             string name = HttpContext.Session.GetString("username");
 
-            var remoteUser = from conversations in _context.Conversations
-                             where conversations.RemoteUser.Username == contact && conversations.User.Username == name
-                             select conversations.RemoteUser;
-
-            _context.RemoteUsers.Remove(remoteUser.First());
-            _context.SaveChanges();
+            var q = from conversations in _context.Conversations.Include(c => c.RemoteUser)
+                    where conversations.RemoteUser.Username == id && conversations.User.Username == name
+                    select conversations.RemoteUser;
+            if (!q.Any())
+            {
+                return BadRequest();
+            }
+            RemoteUser remoteUser = q.First();
+            _context.RemoteUsers.Remove(remoteUser);
+            await _context.SaveChangesAsync();
             return NoContent();    //204
-        }
-
-
-        private Message getLastMessage(RemoteUser ru, string name)
-        {
-            var q = from conv in _context.Conversations.Include(m => m.Messages)
-                    where conv.User.Username == name && conv.RemoteUser == ru
-                    select conv;
-
-            Conversation c = q.First();
-            return c.Messages.OrderByDescending(m => m.Id).FirstOrDefault();
-        }
-        private string getContentFromMessage(Message message)
-        {
-            int start = message.Content.ToString().IndexOf(":") + 1;
-            return message.Content.ToString().Substring(start);
         }
     }
 }

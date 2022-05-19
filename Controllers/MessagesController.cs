@@ -14,7 +14,6 @@ namespace ChatApp.Controllers
 {
 
     [ApiController]
-    // ???????????????????????????????????????????
     [Route("api/contacts/{id}/messages")]
     public class MessagesController : Controller
     {
@@ -109,21 +108,41 @@ namespace ChatApp.Controllers
             //no need to add to messages database; entity frmework adds it alone because of their relation.
             conver.Messages.Add(message);
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return StatusCode(201);    // 201
         }
-
-        // GET: Messages/Details/5
-        [HttpPut, ActionName("messages")]
-        public async Task<IActionResult> RemoveMessage(string id, int? id2, [Bind("content")] string content)
+        
+        
+        [HttpDelete("{id2?}")]
+        public async Task<IActionResult> RemoveMessage(string id, int id2)
         {
-            Message mess = (Message)from message in _context.Messages
-                                    where message.Id == id2
-                                    select message;
-            _context.Messages.Remove(mess);
-            _context.SaveChanges();
-            return NoContent();    //204
+            if (id2 == 0)
+            {
+                return BadRequest();
+            }
+            var q = from message in _context.Messages
+                    where message.Id == id2
+                    select message;
+            _context.Messages.Remove(q.First());
+            await _context.SaveChangesAsync();
+            return Ok();   
+        }
+
+        [HttpPut("{id2?}")]
+        public async Task<IActionResult> UpdateMessage(string id, int id2, [Bind("content")] _Message mess)
+        {
+            if (id2 == 0)
+            {
+                return BadRequest();
+            }
+            var q = from message in _context.Messages
+                    where message.Id == id2
+                    select message;
+            Message toUpdate = q.First();
+            toUpdate.Content = mess.Content;
+            await _context.SaveChangesAsync();
+            return Ok();  
         }
         public static string getTime()
         {
