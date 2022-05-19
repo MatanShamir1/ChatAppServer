@@ -31,7 +31,7 @@ namespace ChatApp.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        public IActionResult Register([FromBody] User user)
+        public async Task<IActionResult> Register([FromBody] User user)
         {
             if (ModelState.IsValid)
             {
@@ -43,7 +43,7 @@ namespace ChatApp.Controllers
                 else
                 { 
                     _context.Add(user);
-                    _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync();
                     return StatusCode(201);
                             
                  }          

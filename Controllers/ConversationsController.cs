@@ -135,6 +135,10 @@ namespace ChatApp.Controllers
                 var user = from users in _context.Users.Include(m=>m.Conversations)
                            where users.Username == name
                            select users;
+                if (!user.Any())
+                {
+                    return BadRequest();
+                }
                 User current = user.First();
                 Conversation conversation = new Conversation() { User = current, Messages = new List<Message>()};
                 RemoteUser remoteUser = new RemoteUser() {Conversation = conversation, Nickname = initialRemoteUser.Name,
