@@ -62,7 +62,7 @@ namespace ChatApp.Services
             return messagesList;
         }
 
-        public async Task<string> AddNewMessage(string name, string id, Message message)
+        public async Task<string> AddNewMessage(string name, string id, Message message, string sender)
         {
             var conversation = from conv in _context.Conversations.Include(c => c.Messages)
                                where conv.User.Username == name && conv.RemoteUser.Username == id
@@ -73,8 +73,12 @@ namespace ChatApp.Services
                 return "bad";
             }
             Conversation conver = conversation.FirstOrDefault();
-
-            string newContent = name + ":" + message.Content;
+            string name_of_sender = name;
+            if (sender == "second")
+            {
+                name_of_sender = id;
+            }
+            string newContent = name_of_sender + ":" + message.Content;
 
             message.Content = newContent;
 

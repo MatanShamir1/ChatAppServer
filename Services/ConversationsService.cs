@@ -2,6 +2,7 @@
 using ChatApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ChatApp.Services
 
 namespace ChatApp.Services
 {
@@ -50,6 +51,11 @@ namespace ChatApp.Services
                 users.Add(await this.GetContactById(contact.RemoteUser.Username, name));
             }
 
+            users.Sort((_User user1, _User user2) =>
+            {
+                return user2.LastDate.CompareTo(user1.LastDate);
+            });
+
             return users;
         }
 
@@ -91,6 +97,24 @@ namespace ChatApp.Services
             await _context.Conversations.AddAsync(conversation);
             await _context.SaveChangesAsync();
             return "201";
+        }
+
+        public async Task<string> TransferToUser(_Transfer transfer)
+        {
+            var q = from users in _context.Users
+                    where users.Username == transfer.To
+                    select users;
+            if (!q.Any())
+            {
+                //send back a bad request, user doesn't exist!
+                return "bad";
+            }
+            //in this case, user exists, add "from" to "to"'s contacts list.
+
+            Message message = new Message() { Content = transfer.Content};
+            MessagesService _mService = new MessagesService(_context);
+
+            return await _mService.AddNewMessage(transfer.To, transfer.From, message, "second");
         }
 
         public async Task<string> CreateContact(_User initialRemoteUser, string name)

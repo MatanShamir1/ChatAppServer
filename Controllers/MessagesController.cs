@@ -56,7 +56,7 @@ namespace ChatApp.Controllers
             //string username = "12345";
             string name = HttpContext.Session.GetString("username");
 
-            string status = await _service.AddNewMessage(name, id, message);
+            string status = await _service.AddNewMessage(name, id, message, "first");
             
             if(status == "201")
             {
