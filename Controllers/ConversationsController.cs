@@ -155,19 +155,25 @@ namespace ChatApp.Controllers
 
 
         // PUT: /contacts/id
-        [HttpPut, ActionName("contacts")]
-        public async Task<IActionResult> Put(string contact, [Bind("UserName, NickName, Server")] RemoteUser ru)
+        [HttpPut("contacts/{id?}")]
+        public async Task<IActionResult> Put(string id, [Bind("Name, Server")] _RemoteUser ru)
         {
-            if (ru == null)
+            if (id == null)
             {
-                return Json(new EmptyResult());
+                return BadRequest();
             }
 
-            RemoteUser remoteUser = (RemoteUser)from remote in _context.RemoteUsers
-                                                where remote.Username == contact && remote.Server == ru.Server
-                                                select remote;
-            remoteUser.Username = ru.Username;
-            remoteUser.Nickname = ru.Nickname;
+            var q =  from remote in _context.RemoteUsers
+                     where remote.Username == id && remote.Server == ru.Server && remote.Nickname == ru.Name
+                     select remote;
+            if (!q.Any())
+            {
+                return BadRequest();
+            }
+            RemoteUser remoteUser = q.First();
+            remoteUser.Server = ru.Server;
+            remoteUser.Nickname = ru.Name;
+            await _context.SaveChangesAsync();
             return NoContent();    //204
         }
 
