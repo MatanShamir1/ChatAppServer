@@ -79,6 +79,24 @@ namespace ChatApp.Controllers
             return BadRequest();
         }
 
+        [HttpPost("transfer")]
+        public async Task<IActionResult> Transfer([FromBody] _Transfer transfer)
+        {
+            if (ModelState.IsValid)
+            {
+                string status = await _service.TransferToUser(transfer);
+                if (status == "bad")
+                {
+                    return BadRequest();
+                }
+                else
+                {
+                    return StatusCode(201);
+                }
+            }
+            return BadRequest();
+        }
+
         [HttpPost ("contacts/{id?}")]
         public async Task<IActionResult> CreateContact([FromBody] _User initialRemoteUser)
         {
