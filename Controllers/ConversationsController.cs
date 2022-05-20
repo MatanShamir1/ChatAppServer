@@ -34,13 +34,13 @@ namespace ChatApp.Controllers
             //RemoteUser ru = new RemoteUser() { Username = "Coral", Nickname = "Corali", Conversation = conv, Server = "remote", ConversationId = 1 };
             //u.Conversations.Add(conv);
             //conv.RemoteUser = ru;
-            //_context.Add(msg);
-            //_context.Add(u);
-            //_context.Add(ru);
-            //_context.Add(conv);
+            //context.Add(msg);
+            //context.Add(u);
+            //context.Add(ru);
+            //context.Add(conv);
 
 
-            //_context.SaveChanges();
+            //context.SaveChanges();
         }
 
         

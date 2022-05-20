@@ -8,7 +8,8 @@
 <head>
    <style>
 .main-section{
-background:#FFFFFF;
+background-color: #bdbdba	;
+color:white;
 width:80%;
 margin: 0 auto;
 padding: 10px;
@@ -84,6 +85,7 @@ font-size:23px;
 .reviews h1{
     margin-top: 10px;
     margin-bottom: 23px;
+    
 }
 .user-img img{
 height: 80px;
@@ -94,6 +96,9 @@ border-radius: 50%;
 .user-img-part{
 width:30%;
 float:left;
+}
+.p10{
+color:black;
 }
 .user-img{
 width:48%;
@@ -108,13 +113,13 @@ float:left;
 }
 .user-text h4,.user-text p{
 margin:0px 0px 5px 0px;
+color:white
 }
 .user-text p{
 font-size: 20px;
 font-weight: bold;
 }
 .user-text h4,.user-text span{
-color:#B3B5B4;
 }
 .comment{
 width:100%;
@@ -147,8 +152,6 @@ text-align:center;
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
- 
-      <a className="btn btn-outline-dark log-out2" href="http://localhost:53601/">Go to Rating</a>
   <p>
     <a class="create btn btn-link links" asp-action="Create">Create New</a>
 </p>
@@ -224,7 +227,7 @@ sum = sum / counter;
         <div class="user-text">
         <h4>@item.Time</h4>
         <p>@Html.DisplayFor(modelItem => item.Name)</p>
-        <div>Review</div>
+        <div class="p10">Review</div>
         <span class="ch2">@Html.DisplayFor(modelItem => item.Text)</span>
         </div>
         <div style="clear: both;"></div>

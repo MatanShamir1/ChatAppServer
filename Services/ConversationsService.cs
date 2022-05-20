@@ -142,11 +142,23 @@ namespace ChatApp.Services
             var q = from conversations in _context.Conversations.Include(c => c.RemoteUser)
                     where conversations.RemoteUser.Username == id && conversations.User.Username == name
                     select conversations.RemoteUser;
+            var query = _context.Conversations.Include(m => m.Messages).Where(c => c.User.Username == name && c.RemoteUser.Username == id).ToList();
             if (!q.Any())
             {
                 return "bad";
             }
-            RemoteUser remoteUser = q.First();
+            if (!query.Any())
+            {
+                //return null;
+            }
+
+            List<Message> messages = query.First().Messages;
+
+            foreach (Message message in messages)
+            {
+                _context.Messages.Remove(message);
+            }
+             RemoteUser remoteUser = q.First();
             _context.RemoteUsers.Remove(remoteUser);
             await _context.SaveChangesAsync();
             return "204";

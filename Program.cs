@@ -7,6 +7,7 @@ builder.Services.AddDbContext<ChatAppContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ChatAppContext") ?? throw new InvalidOperationException("Connection string 'ChatAppContext' not found.")));
 
 // Add services to the container.
+// Add services to the container.
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDistributedMemoryCache();
@@ -26,7 +27,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("cors_policy",
     builder =>
     {
-        builder.WithOrigins("http://localhost:3002").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
+        builder.WithOrigins("http://localhost:3004").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
         builder.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
     });
 });
