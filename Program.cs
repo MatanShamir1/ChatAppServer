@@ -1,6 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ChatApp.Data;
+using Microsoft.AspNetCore.SignalR;
+using ChatApp.Hubs;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<ChatAppContext>(options =>
@@ -19,7 +22,31 @@ builder.Services.AddSession(options =>
     options.Cookie.SameSite = SameSiteMode.None;
     options.IdleTimeout = TimeSpan.FromMinutes(30);
 });
+builder.Services.AddRazorPages();
+builder.Services.AddSignalR(e => {
+    e.MaximumReceiveMessageSize = 102400000;
+});
 
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        builder =>
+        {
+            builder.WithOrigins("http://localhost:5243")
+                .AllowAnyHeader()
+                .WithMethods("GET", "POST")
+                .AllowCredentials();
+        });
+});
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(builder =>
+    {
+        builder.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
+    });
+});
 builder.Services.AddCors(options =>
 {
     // options.AddDefaultPolicy(policy => policy.AllowAnyOrigin());
@@ -27,7 +54,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("cors_policy",
     builder =>
     {
-        builder.WithOrigins("http://localhost:3004").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
+        builder.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
         builder.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
     });
 });
@@ -59,7 +86,10 @@ app.UseSession();
 app.UseAuthorization();
 
 app.UseAuthentication();
-
+app.UseEndpoints(endpoint =>
+{
+    endpoint.MapHub<ChatHub>("/ChatHub");
+});
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Ratings}/{action=Index}/{id?}");

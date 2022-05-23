@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using ChatApp.Models;
 using ChatApp.Data;
 using ChatApp.Services;
+using Microsoft.AspNetCore.SignalR;
+using ChatApp.Hubs;
 
 namespace ChatApp.Controllers
 {
@@ -16,33 +18,43 @@ namespace ChatApp.Controllers
             return date.ToString("o");
         }
         private readonly ConversationsService _service;
-
-        public ConversationsController(ChatAppContext context)
+        private readonly IHubContext<ChatHub> _hubContext;
+        public ConversationsController(ChatAppContext context , IHubContext<ChatHub> hubContext)
         {
             _service = new ConversationsService(context);
-
-            //User u = new User()
-            //{
-            //    Username = "12345",
-            //    Nickname = "Tani",
-            //    Conversations = new List<Conversation>(),
-            //    Password = "aaa"
-            //};
-            //Message msg = new Message() { Content = "12345:Hello", Time = getTime() };
-
-            //Conversation conv = new Conversation() { RemoteUser = null, Messages = new List<Message>() { msg }, RemoteUserId = 1, User = u };
-            //RemoteUser ru = new RemoteUser() { Username = "Coral", Nickname = "Corali", Conversation = conv, Server = "remote", ConversationId = 1 };
-            //u.Conversations.Add(conv);
-            //conv.RemoteUser = ru;
-            //context.Add(msg);
-            //context.Add(u);
-            //context.Add(ru);
-            //context.Add(conv);
+    
+            _hubContext = hubContext;
 
 
-            //context.SaveChanges();
+  
+        
+        //User u = new User()
+        //{
+        //    Username = "12345",
+        //    Nickname = "Tani",
+        //    Conversations = new List<Conversation>(),
+        //    Password = "aaa"
+        //};
+        //Message msg = new Message() { Content = "12345:Hello", Time = getTime() };
+
+        //Conversation conv = new Conversation() { RemoteUser = null, Messages = new List<Message>() { msg }, RemoteUserId = 1, User = u };
+        //RemoteUser ru = new RemoteUser() { Username = "Coral", Nickname = "Corali", Conversation = conv, Server = "remote", ConversationId = 1 };
+        //u.Conversations.Add(conv);
+        //conv.RemoteUser = ru;
+        //context.Add(msg);
+        //context.Add(u);
+        //context.Add(ru);
+        //context.Add(conv);
+
+
+        //context.SaveChanges();
+    }
+    public async Task SendToAll(string user){
+     if (ChatHub.UserAndConnect.ContainsKey(user))
+            {
+                await _hubContext.Clients.Client(ChatHub.UserAndConnect[user]).SendAsync("RecieveMessage");
+            }
         }
-
         
         [HttpGet("contacts/{id?}")]
         public async Task<IActionResult> GetAllContacts(string? id)
@@ -91,6 +103,7 @@ namespace ChatApp.Controllers
                 }
                 else
                 {
+                    await this.SendToAll(transfer.To);
                     return StatusCode(201);
                 }
             }

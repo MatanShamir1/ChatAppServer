@@ -2,7 +2,7 @@
 using ChatApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ChatApp.Services
+using ChatApp.Services;
 
 namespace ChatApp.Services
 {
