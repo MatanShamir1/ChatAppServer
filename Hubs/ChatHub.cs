@@ -12,6 +12,6 @@ namespace ChatApp.Hubs
         {
             UserAndConnect.Add(user, Context.ConnectionId);
         }
-
+  
     }
 }
