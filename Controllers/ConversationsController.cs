@@ -26,33 +26,34 @@ namespace ChatApp.Controllers
             _hubContext = hubContext;
 
 
-  
-        
-        //User u = new User()
-        //{
-        //    Username = "12345",
-        //    Nickname = "Tani",
-        //    Conversations = new List<Conversation>(),
-        //    Password = "aaa"
-        //};
-        //Message msg = new Message() { Content = "12345:Hello", Time = getTime() };
-
-        //Conversation conv = new Conversation() { RemoteUser = null, Messages = new List<Message>() { msg }, RemoteUserId = 1, User = u };
-        //RemoteUser ru = new RemoteUser() { Username = "Coral", Nickname = "Corali", Conversation = conv, Server = "remote", ConversationId = 1 };
-        //u.Conversations.Add(conv);
-        //conv.RemoteUser = ru;
-        //context.Add(msg);
-        //context.Add(u);
-        //context.Add(ru);
-        //context.Add(conv);
 
 
-        //context.SaveChanges();
-    }
-    public async Task SendToAll(string user){
+            //User u = new User()
+            //{
+            //    Username = "12345",
+            //    Nickname = "Tani",
+            //    Conversations = new List<Conversation>(),
+            //    Password = "aaa"
+            //};
+            //Message msg = new Message() { Content = "12345:Hello", Time = getTime() };
+
+            //Conversation conv = new Conversation() { RemoteUser = null, Messages = new List<Message>() { msg }, RemoteUserId = 1, User = u };
+            //RemoteUser ru = new RemoteUser() { Username = "Coral", Nickname = "Corali", Conversation = conv, Server = "remote", ConversationId = 1 };
+            //u.Conversations.Add(conv);
+            //conv.RemoteUser = ru;
+            //context.Add(msg);
+            //context.Add(u);
+            //context.Add(ru);
+            //context.Add(conv);
+
+
+            //context.SaveChanges();
+        }
+    public async Task SendToAll(string user ,string from){
      if (ChatHub.UserAndConnect.ContainsKey(user))
             {
-                await _hubContext.Clients.Client(ChatHub.UserAndConnect[user]).SendAsync("RecieveMessage");
+                _User remoteUser = await _service.GetContactById(user, from);
+                await _hubContext.Clients.Client(ChatHub.UserAndConnect[user]).SendAsync("RecieveMessage" , from , remoteUser.Server);
             }
         }
         
@@ -103,7 +104,7 @@ namespace ChatApp.Controllers
                 }
                 else
                 {
-                    await this.SendToAll(transfer.To);
+                    await this.SendToAll(transfer.To , transfer.From);
                     return StatusCode(201);
                 }
             }

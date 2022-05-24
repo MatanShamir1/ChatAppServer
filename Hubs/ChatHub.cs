@@ -10,7 +10,10 @@ namespace ChatApp.Hubs
         
         public async Task JoinRoom (string user)
         {
-            
+            if (UserAndConnect.ContainsKey(user))
+            {
+                UserAndConnect.Remove(user);
+            }
             UserAndConnect.Add(user, Context.ConnectionId);
         }
         public async Task Remove(string user)

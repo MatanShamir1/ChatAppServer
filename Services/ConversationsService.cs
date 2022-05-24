@@ -89,7 +89,8 @@ namespace ChatApp.Services
                 Conversation = conversation,
                 Username = invitation.From,
                 Server = invitation.Server,
-                ConversationId = conversation.Id
+                ConversationId = conversation.Id,
+                Nickname = invitation.From
             };
             conversation.RemoteUser = From;
             conversation.RemoteUserId = From.Id;
