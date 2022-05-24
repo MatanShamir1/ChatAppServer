@@ -55,7 +55,7 @@ namespace ChatApp.Controllers
                 _User remoteUser = await _service.GetContactById(user, from);
                 await _hubContext.Clients.Client(ChatHub.UserAndConnect[user]).SendAsync("RecieveMessage" , from , remoteUser.Server);
             }
-        }
+     }
         
         [HttpGet("contacts/{id?}")]
         public async Task<IActionResult> GetAllContacts(string? id)
