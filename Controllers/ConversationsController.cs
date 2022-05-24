@@ -54,7 +54,7 @@ namespace ChatApp.Controllers
             {
                 await _hubContext.Clients.Client(ChatHub.UserAndConnect[user]).SendAsync("RecieveMessage");
             }
-        }
+     }
         
         [HttpGet("contacts/{id?}")]
         public async Task<IActionResult> GetAllContacts(string? id)
