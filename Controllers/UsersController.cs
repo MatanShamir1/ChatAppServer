@@ -36,7 +36,7 @@ namespace ChatApp.Controllers
                 }
                 else
                 {
-                    return BadRequest();
+                    return StatusCode(202);
                 }  
             }
             return BadRequest();
@@ -63,8 +63,44 @@ namespace ChatApp.Controllers
                 }
                 else
                 {
-                    return BadRequest();
+                    return StatusCode(202);
                 }
+            }
+            return BadRequest();
+        }
+
+        [HttpGet]
+        //public IActionResult Login([FromBody]User user)
+        public async Task<IActionResult> IsExists()
+        {
+            if (ModelState.IsValid)
+            {
+                string name = HttpContext.Session.GetString("username");
+                if (name != null)
+                {
+                    return Json(name);
+                }
+                else
+                {
+                    return Json("");
+                }
+            }
+            return BadRequest();
+        }
+
+        [HttpPost]
+        //public IActionResult Login([FromBody]User user)
+        public async Task<IActionResult> LogOut()
+        {
+            if (ModelState.IsValid)
+            {
+                string name = HttpContext.Session.GetString("username");
+                if (name == null)
+                {
+                    return Ok();
+                }
+                HttpContext.Session.Remove("username");
+                return Ok();
             }
             return BadRequest();
         }
