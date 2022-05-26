@@ -49,7 +49,13 @@ test the react app from our **ChatApp** repo to see the web service functionalit
    ![image](https://user-images.githubusercontent.com/74719554/170250972-b5c02025-8ade-478d-84e7-d477229f7059.png)
 enter this repo's location from the ![image](https://user-images.githubusercontent.com/74719554/170251059-59ce3781-092e-4e43-8c58-cb6c3e9df193.png)
 part, and walla! you cloned our repo.
-4. run the server.
+3. in package manager console. enter: 
+   ``` add-migration init ``` to initialize a new migration for entity framework's default database.
+4. then enter:
+   ``` update-database ``` in the same console.
+5. check that the database has been created.
+6. read how-to-use-the-app section for details about creating data, and read the client side readme parallely
+7. run the server.
 
 ## How-to-use-the-app
 please refer **ChatApp** repository for more information on how to activate the client.
