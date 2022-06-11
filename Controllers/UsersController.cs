@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using ChatApp.Models;
 using ChatApp.Data;
 using ChatApp.Services;
+using ChatApp.Hubs;
 
 namespace ChatApp.Controllers
 {
@@ -42,6 +43,26 @@ namespace ChatApp.Controllers
             return BadRequest();
         }
 
+        [HttpPost]
+        public async Task<IActionResult> AddToken([FromBody] Token token)
+        {
+            if (ModelState.IsValid)
+            {
+                string name = HttpContext.Session.GetString("username");
+                if (name == null)
+                {
+                    return StatusCode(400);
+                }
+                else
+                {
+                    AndroidHub.tokenDic.Add(name, token.newtoken);
+                    return StatusCode(201);
+                }
+
+
+            }
+            return BadRequest();
+        }
 
         // POST: Users/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.

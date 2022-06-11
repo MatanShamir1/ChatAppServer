@@ -53,7 +53,16 @@ namespace ChatApp.Controllers
      if (ChatHub.UserAndConnect.ContainsKey(user))
             {
                 _User remoteUser = await _service.GetContactById(user, from);
-                await _hubContext.Clients.Client(ChatHub.UserAndConnect[user]).SendAsync("RecieveMessage" , from , remoteUser.Server);
+                if (ChatHub.UserAndConnect[user] != null)
+                {
+                    await _hubContext.Clients.Client(ChatHub.UserAndConnect[user]).SendAsync("RecieveMessage", from, remoteUser.Server);
+                }else if (AndroidHub.tokenDic[user]!=null)
+                {
+                    //need to handle sending to firebase right here.
+
+
+                }
+                
             }
      }
         
