@@ -5,6 +5,10 @@ using ChatApp.Data;
 using ChatApp.Services;
 using Microsoft.AspNetCore.SignalR;
 using ChatApp.Hubs;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
+using FirebaseAdmin.Messaging;
+using Message = FirebaseAdmin.Messaging.Message;
 
 namespace ChatApp.Controllers
 {
@@ -26,8 +30,13 @@ namespace ChatApp.Controllers
             _hubContext = hubContext;
 
 
-
-
+            if (FirebaseApp.DefaultInstance == null)
+            {
+                FirebaseApp.Create(new AppOptions()
+                {
+                    Credential = GoogleCredential.FromFile("private_key.json")
+                });
+            }
             //User u = new User()
             //{
             //    Username = "12345",
@@ -50,20 +59,40 @@ namespace ChatApp.Controllers
             //context.SaveChanges();
         }
     public async Task SendToAll(string user ,string from){
-     if (ChatHub.UserAndConnect.ContainsKey(user))
+            if (ChatHub.UserAndConnect.ContainsKey(user))
             {
                 _User remoteUser = await _service.GetContactById(user, from);
                 if (ChatHub.UserAndConnect[user] != null)
                 {
                     await _hubContext.Clients.Client(ChatHub.UserAndConnect[user]).SendAsync("RecieveMessage", from, remoteUser.Server);
-                }else if (AndroidHub.tokenDic[user]!=null)
-                {
-                    //need to handle sending to firebase right here.
-
-
                 }
-                
             }
+            else if (AndroidHub.tokenDic[from] != null)
+            {
+                //need to handle sending to firebase right here.
+
+           
+                var registrationToken = AndroidHub.tokenDic[user];
+             
+
+                var message = new Message()
+                {
+                    
+                    Token = registrationToken,
+                    Data = new Dictionary<string, string>(),
+                    Notification = new Notification()
+                    {
+                        // need to send the message
+                        Title = "new Title",
+                        Body = "message"
+                    }
+
+                };
+                string response = FirebaseMessaging.DefaultInstance.SendAsync(message).Result;
+
+            }
+                
+            
      }
         
         [HttpGet("contacts/{id?}")]
