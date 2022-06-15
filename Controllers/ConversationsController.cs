@@ -72,23 +72,26 @@ namespace ChatApp.Controllers
                 //need to handle sending to firebase right here.
 
            
-                var registrationToken = AndroidHub.tokenDic[user];
+                var token = AndroidHub.tokenDic[from];
              
 
                 var message = new Message()
                 {
-                    
-                    Token = registrationToken,
-                    Data = new Dictionary<string, string>(),
+                    Data = new Dictionary<string, string>()
+                    {
+                        {"key","value" },
+                    },
+                    Token = token,
                     Notification = new Notification()
                     {
                         // need to send the message
-                        Title = "new Title",
-                        Body = "message"
+                        Title = "notification title",
+                        Body = "notification body"
                     }
 
                 };
                 string response = FirebaseMessaging.DefaultInstance.SendAsync(message).Result;
+                Console.WriteLine("message:" + response);
 
             }
                 
