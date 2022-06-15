@@ -86,8 +86,8 @@ namespace ChatApp.Controllers
                     Notification = new Notification()
                     {
                         // need to send the message
-                        Title = "Hi you have new Message",
-                        Body = "You got message from " + from
+                        Title = "You have new Message!",
+                        Body = "You received a message from " + from
                     }
 
                 };
