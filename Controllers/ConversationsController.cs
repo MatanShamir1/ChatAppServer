@@ -9,6 +9,7 @@ using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using FirebaseAdmin.Messaging;
 using Message = FirebaseAdmin.Messaging.Message;
+using my_Message = ChatApp.Models.Message;
 
 namespace ChatApp.Controllers
 {
@@ -44,9 +45,9 @@ namespace ChatApp.Controllers
             //    Conversations = new List<Conversation>(),
             //    Password = "aaa"
             //};
-            //Message msg = new Message() { Content = "12345:Hello", Time = getTime() };
+            //my_Message msg = new my_Message() { Content = "12345:Hello", Time = getTime() };
 
-            //Conversation conv = new Conversation() { RemoteUser = null, Messages = new List<Message>() { msg }, RemoteUserId = 1, User = u };
+            //Conversation conv = new Conversation() { RemoteUser = null, Messages = new List<my_Message>() { msg }, RemoteUserId = 1, User = u };
             //RemoteUser ru = new RemoteUser() { Username = "Coral", Nickname = "Corali", Conversation = conv, Server = "remote", ConversationId = 1 };
             //u.Conversations.Add(conv);
             //conv.RemoteUser = ru;
@@ -67,26 +68,26 @@ namespace ChatApp.Controllers
                     await _hubContext.Clients.Client(ChatHub.UserAndConnect[user]).SendAsync("RecieveMessage", from, remoteUser.Server);
                 }
             }
-            else if (AndroidHub.tokenDic[from] != null)
+            if (AndroidHub.tokenDic[user] != null)
             {
                 //need to handle sending to firebase right here.
 
            
-                var token = AndroidHub.tokenDic[from];
-             
+                var token = AndroidHub.tokenDic[user];
+
 
                 var message = new Message()
                 {
                     Data = new Dictionary<string, string>()
                     {
-                        {"key","value" },
+                        { "key", "value" },
                     },
                     Token = token,
                     Notification = new Notification()
                     {
                         // need to send the message
-                        Title = "notification title",
-                        Body = "notification body"
+                        Title = "Hi you have new Message",
+                        Body = "You got message from " + from
                     }
 
                 };

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChatApp.Migrations
 {
     [DbContext(typeof(ChatAppContext))]
-    [Migration("20220524173556_init")]
-    partial class init
+    [Migration("20220615103030_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
