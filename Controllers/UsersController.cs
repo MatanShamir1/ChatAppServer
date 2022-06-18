@@ -63,7 +63,29 @@ namespace ChatApp.Controllers
             }
             return BadRequest();
         }
+        [HttpPost]
+        public async Task<IActionResult> DeleteToken()
+        {
+            if (ModelState.IsValid)
+            {
+                string name = HttpContext.Session.GetString("username");
+                if (name == null)
+                {
+                    return StatusCode(400);
+                }
+                else
+                {
+                   if(AndroidHub.tokenDic[name] != null)
+                    {
+                        AndroidHub.tokenDic[name] = null;
+                    }
+                    return StatusCode(201);
+                }
 
+
+            }
+            return BadRequest();
+        }
         // POST: Users/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
